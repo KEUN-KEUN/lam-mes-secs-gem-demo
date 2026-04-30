@@ -1,0 +1,29 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.vscode/
+**/Properties/launchSettings.json
+
+# Claude Code 내부 설정
+.claude/
+
+# Logs
+logs/
+*.log
+
+# Angular
+src/SecsGemDemo.Frontend/node_modules/
+src/SecsGemDemo.Frontend/dist/
+src/SecsGemDemo.Frontend/.angular/
+
+# Secrets / env
+.env
+*.pfx
+appsettings.Production.json
+
+# OS
+.DS_Store
+Thumbs.db
