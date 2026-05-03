@@ -1,6 +1,7 @@
 using Secs4Net;
 using SecsGemDemo.Domain.Catalogs;
 using SecsGemDemo.Host.Api.Dtos;
+using SecsGemDemo.Host.Api.Models;
 using static Secs4Net.Item;
 
 namespace SecsGemDemo.Host.Api.Services;
@@ -10,9 +11,60 @@ public sealed class ScenarioOrchestrator(
     ISecsConnection hsmsConnection,
     ValidationEngine validation,
     MessageBroadcaster broadcaster,
-    GemStateTracker stateTracker)
+    GemStateTracker stateTracker,
+    MasterDataStore masterData,
+    ScenarioStore scenarioStore,
+    EquipmentProxy equipmentProxy)
 {
-    private const uint DataId = 9001;
+    private uint _dataIdCounter = 9001;
+
+    public async Task RunScenarioAsync(ScenarioDefinition def, CancellationToken ct)
+    {
+        masterData.ConfigureLot(def.LotId, ProcessStepCatalog.PhotoLitho, def.WaferCount);
+        masterData.ConfigureRecipe(def.Ppid);
+
+        if (stateTracker.CommState != "Communicating")
+        {
+            await ConnectAsync(ct);
+            await Task.Delay(500, ct);
+            await DefineReportsAsync(ct);
+            await Task.Delay(300, ct);
+        }
+
+        var run = scenarioStore.StartRun(def);
+
+        await equipmentProxy.CarrierArrivedAsync(def.LotId, ct);
+        await Task.Delay(1000, ct);
+
+        await SelectRecipeAsync(def.Ppid, ct);
+        await Task.Delay(500, ct);
+
+        await equipmentProxy.ProcessStartAsync(def.LotId, def.Ppid, def.WaferCount, ct);
+        await equipmentProxy.TraceStartAsync(ct);
+
+        if (def.TriggerAlarm)
+        {
+            await Task.Delay(5000, ct);
+            await equipmentProxy.AlarmSetAsync(ct);
+            run.AlarmCount++;
+            await Task.Delay(3000, ct);
+            await equipmentProxy.AlarmClearAsync(ct);
+            await Task.Delay(7000, ct);
+        }
+        else
+        {
+            await Task.Delay(15000, ct);
+        }
+
+        await equipmentProxy.ProcessEndAsync(ct);
+        await Task.Delay(500, ct);
+
+        scenarioStore.CompleteRun(run, "PASS");
+
+        await broadcaster.BroadcastScenarioResultAsync(new ScenarioResultDto(
+            run.RunId, run.ScenarioName, run.LotId, run.Ppid, run.WaferCount,
+            run.StartTime, run.EndTime, run.Result, run.AlarmCount, run.DurationSeconds), ct);
+    }
 
     public async Task ConnectAsync(CancellationToken ct)
     {
@@ -64,7 +116,7 @@ public sealed class ScenarioOrchestrator(
         var s2f33 = new SecsMessage(2, 33, replyExpected: true)
         {
             Name = $"Define Report RPTID={rptId}",
-            SecsItem = L(U4(DataId), L(L(U4(rptId), L(dvids.Select(d => U4(d))))))
+            SecsItem = L(U4(_dataIdCounter++), L(L(U4(rptId), L(dvids.Select(d => U4(d))))))
         };
         var s2f34 = await SendAndLogAsync(s2f33, ct);
         Serilog.Log.Information("[SCENARIO] S2F34 DRACK={Ack} RPTID={RptId}",
@@ -76,7 +128,7 @@ public sealed class ScenarioOrchestrator(
         var s2f35 = new SecsMessage(2, 35, replyExpected: true)
         {
             Name = $"Link Event CEID={ceid}",
-            SecsItem = L(U4(DataId), L(L(U4(ceid), L(rptIds.Select(r => U4(r))))))
+            SecsItem = L(U4(_dataIdCounter++), L(L(U4(ceid), L(rptIds.Select(r => U4(r))))))
         };
         var s2f36 = await SendAndLogAsync(s2f35, ct);
         Serilog.Log.Information("[SCENARIO] S2F36 LRACK={Ack} CEID={Ceid}",

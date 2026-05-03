@@ -1,11 +1,15 @@
 <div class="app-shell">
   <header class="app-header">
     <div class="header-brand">
-      <span class="header-logo">⚙</span>
+      <span class="header-logo">&#9881;</span>
       <div>
         <div class="header-title">SECS/GEM Track-In/Out Demo</div>
         <div class="header-sub">LAM Process Equipment · Photo-Litho Stepper #1</div>
       </div>
+    </div>
+    <div class="header-center">
+      <span class="conn-dot" [class.connected]="(signalr.connected$ | async)"></span>
+      <span class="conn-label">{{ (signalr.connected$ | async) ? 'SignalR Connected' : 'SignalR Disconnected' }}</span>
     </div>
     <div class="header-badges">
       <span class="badge">SEMI E5 / E30 / E37</span>
@@ -16,13 +20,37 @@
 
   <main class="app-main">
     <aside class="sidebar">
+      <app-scenario-selector />
+      <div class="divider"></div>
       <app-state-panel />
       <div class="divider"></div>
       <app-scenario-panel />
+      <div class="divider"></div>
+      <app-alarm-panel />
     </aside>
 
     <section class="content">
-      <app-message-log />
+      <div class="top-row">
+        <div class="tab-bar">
+          <button class="tab-btn" [class.active]="activeTab === 'trace'"   (click)="activeTab = 'trace'">Trace</button>
+          <button class="tab-btn" [class.active]="activeTab === 'states'"  (click)="activeTab = 'states'">GEM States</button>
+          <button class="tab-btn" [class.active]="activeTab === 'results'" (click)="activeTab = 'results'">Results</button>
+        </div>
+        <div class="tab-content">
+          <app-trace-chart        class="tab-panel" [hidden]="activeTab !== 'trace'" />
+          <app-gem-state-diagram  class="tab-panel" [hidden]="activeTab !== 'states'" />
+          <app-scenario-results   class="tab-panel" [hidden]="activeTab !== 'results'" />
+        </div>
+      </div>
+
+      <div class="bottom-row">
+        <div class="log-wrap">
+          <app-message-log />
+        </div>
+        <div class="history-wrap">
+          <app-process-history />
+        </div>
+      </div>
     </section>
   </main>
 </div>

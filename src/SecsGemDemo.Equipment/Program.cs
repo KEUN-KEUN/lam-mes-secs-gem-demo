@@ -1,4 +1,5 @@
 using Serilog;
+using SecsGemDemo.Domain.Catalogs;
 using SecsGemDemo.Equipment.Handlers;
 using SecsGemDemo.Equipment.Services;
 
@@ -20,6 +21,7 @@ builder.Services.AddSingleton<RecipeStore>(sp =>
 {
     var store = new RecipeStore();
     store.Preload("RCP-PHOTO-A1");
+    store.Preload("RCP-PHOTO-B2");
     return store;
 });
 builder.Services.AddSingleton<EventEmitter>();
@@ -36,18 +38,17 @@ builder.Services.AddHostedService<EquipmentWorker>();
 
 var app = builder.Build();
 
-// Equipment 시나리오 트리거 엔드포인트 (Day 1 콘솔 검증용)
 var eqp = app.MapGroup("/equipment");
 
-eqp.MapPost("/carrier-arrived", async (ProcessSimulator sim, CancellationToken ct) =>
+eqp.MapPost("/carrier-arrived", async (ProcessSimulator sim, CarrierArrivedRequest req, CancellationToken ct) =>
 {
-    await sim.TriggerCarrierArrivedAsync("LOT-2026-0430-001", ct);
+    await sim.TriggerCarrierArrivedAsync(req.LotId, ct);
     return Results.Ok(new { event_ = "carrier-arrived", status = "ok" });
 });
 
-eqp.MapPost("/process-start", async (ProcessSimulator sim, CancellationToken ct) =>
+eqp.MapPost("/process-start", async (ProcessSimulator sim, ProcessStartRequest req, CancellationToken ct) =>
 {
-    await sim.TriggerProcessStartAsync("LOT-2026-0430-001", "RCP-PHOTO-A1", ct);
+    await sim.TriggerProcessStartAsync(req.LotId, req.Ppid, req.WaferCount, ct);
     return Results.Ok(new { event_ = "process-start", status = "ok" });
 });
 
@@ -57,13 +58,31 @@ eqp.MapPost("/process-end", async (ProcessSimulator sim, CancellationToken ct) =
     return Results.Ok(new { event_ = "process-end", status = "ok" });
 });
 
-eqp.MapPost("/trace-start", (ProcessSimulator sim, IHostApplicationLifetime lifetime) =>
+eqp.MapPost("/trace-start", async (ProcessSimulator sim, IHostApplicationLifetime lifetime) =>
 {
-    var cts = CancellationTokenSource.CreateLinkedTokenSource(lifetime.ApplicationStopping);
-    _ = sim.RunTraceStreamingAsync(cts.Token);
+    await sim.StartTraceStreamingAsync(lifetime.ApplicationStopping);
     return Results.Ok(new { event_ = "trace-start", status = "ok" });
 });
 
-eqp.MapPost("/trace-stop", () => Results.Ok(new { note = "stop trace via process-end" }));
+eqp.MapPost("/trace-stop", async (ProcessSimulator sim, CancellationToken ct) =>
+{
+    await sim.TriggerProcessEndAsync(ct);
+    return Results.Ok(new { event_ = "trace-stop", status = "ok" });
+});
+
+eqp.MapPost("/alarm-set", async (ProcessSimulator sim, CancellationToken ct) =>
+{
+    await sim.TriggerAlarmAsync(AlarmCatalog.HighTemperature, true, AlarmCatalog.HighTemperatureText, ct);
+    return Results.Ok(new { event_ = "alarm-set", status = "ok" });
+});
+
+eqp.MapPost("/alarm-clear", async (ProcessSimulator sim, CancellationToken ct) =>
+{
+    await sim.TriggerAlarmAsync(AlarmCatalog.HighTemperature, false, AlarmCatalog.HighTemperatureText, ct);
+    return Results.Ok(new { event_ = "alarm-clear", status = "ok" });
+});
 
 app.Run();
+
+record CarrierArrivedRequest(string LotId);
+record ProcessStartRequest(string LotId, string Ppid, int WaferCount);

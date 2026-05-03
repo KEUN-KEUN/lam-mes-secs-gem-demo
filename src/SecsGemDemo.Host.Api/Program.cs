@@ -32,6 +32,8 @@ builder.Services.AddSingleton<MasterDataStore>();
 builder.Services.AddSingleton<ValidationEngine>();
 builder.Services.AddSingleton<GemStateTracker>();
 builder.Services.AddSingleton<MessageBroadcaster>();
+builder.Services.AddSingleton<ScenarioStore>();
+builder.Services.AddSingleton<EquipmentProxy>();
 builder.Services.AddSingleton<ScenarioOrchestrator>();
 
 builder.Services.AddHostedService<EventSubscriber>();

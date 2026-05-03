@@ -18,7 +18,15 @@ public sealed class S1F13Handler(GemStateMachine stateMachine)
 
         await e.TryReplyAsync(reply, ct);
 
-        stateMachine.OnCommunicationEstablished();
-        Serilog.Log.Information("[STATE] Comm established → ONLINE_REMOTE (auto)");
+        // 이중 Connect 방지: 이미 Communicating 상태면 상태 전이 생략
+        if (stateMachine.CommState != SecsGemDemo.Domain.Enums.CommState.Communicating)
+        {
+            stateMachine.OnCommunicationEstablished();
+            Serilog.Log.Information("[STATE] Comm established → ONLINE_REMOTE");
+        }
+        else
+        {
+            Serilog.Log.Warning("[HANDLER] S1F13 received but already Communicating — state unchanged");
+        }
     }
 }

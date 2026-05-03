@@ -1,3 +1,5 @@
+using SecsGemDemo.Domain.Catalogs;
+
 namespace SecsGemDemo.Host.Api.Services;
 
 public sealed class ValidationEngine(MasterDataStore masterData)
@@ -7,8 +9,8 @@ public sealed class ValidationEngine(MasterDataStore masterData)
         if (masterData.Lot.LotId != lotId)
             return (false, $"LOT {lotId} not found");
 
-        if (masterData.Lot.CurrentStep != "PHOTO-LITHO")
-            return (false, $"LOT {lotId} current step is {masterData.Lot.CurrentStep}, expected PHOTO-LITHO");
+        if (masterData.Lot.CurrentStep != ProcessStepCatalog.PhotoLitho)
+            return (false, $"LOT {lotId} current step is {masterData.Lot.CurrentStep}, expected {ProcessStepCatalog.PhotoLitho}");
 
         return (true, $"LOT {lotId} validated OK");
     }

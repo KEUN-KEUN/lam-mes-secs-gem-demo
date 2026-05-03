@@ -36,52 +36,46 @@ interface Step {
             <span class="step-status" *ngIf="step.state !== 'pending'">
               <span *ngIf="step.state === 'running'" class="spinner">⟳</span>
               <span *ngIf="step.state === 'done'">✓</span>
-              <span *ngIf="step.state === 'error'">✕ Error</span>
+              <span *ngIf="step.state === 'error'">✕</span>
             </span>
           </div>
         </div>
       </div>
-      <button class="reset-btn" (click)="reset()">Reset Scenario</button>
+      <button class="reset-btn" (click)="reset()">↺ Reset Scenario</button>
     </div>
   `,
   styles: [`
     .scenario-panel { display: flex; flex-direction: column; gap: 8px; }
     .panel-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
                    color: #6b7280; text-transform: uppercase; margin: 0 0 4px; }
-    .steps { display: flex; flex-direction: column; gap: 6px; }
+    .steps { display: flex; flex-direction: column; gap: 5px; }
 
     .step {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 14px; border-radius: 8px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 7px;
       border: 1px solid #1f2937; background: #111827;
-      cursor: not-allowed; opacity: 0.45;
-      transition: all 0.2s ease;
-      user-select: none;
+      cursor: not-allowed; opacity: 0.4;
+      transition: all 0.2s ease; user-select: none;
     }
-    .step.enabled {
-      opacity: 1; cursor: pointer; border-color: #374151;
-    }
+    .step.enabled { opacity: 1; cursor: pointer; border-color: #374151; }
     .step.enabled:hover { background: #1f2937; border-color: #4b5563; }
     .step.running { border-color: #f59e0b; background: #1c1408; opacity: 1; }
     .step.done    { border-color: #10b981; background: #062013; opacity: 1; }
     .step.error   { border-color: #ef4444; background: #1a0404; opacity: 1; }
 
-    .step-icon { font-size: 18px; width: 28px; text-align: center; }
+    .step-icon { font-size: 16px; width: 24px; text-align: center; }
     .step-body { display: flex; flex: 1; align-items: center; justify-content: space-between; }
-    .step-label { font-size: 13px; font-weight: 500; color: #d1d5db; }
-    .step-status { font-size: 12px; font-weight: 600; }
-    .step.done .step-status    { color: #10b981; }
-    .step.error .step-status   { color: #ef4444; }
+    .step-label { font-size: 12px; font-weight: 500; color: #d1d5db; }
+    .step-status { font-size: 12px; font-weight: 700; }
+    .step.done .step-status  { color: #10b981; }
+    .step.error .step-status { color: #ef4444; }
     .step.running .step-status { color: #f59e0b; }
-
     .spinner { display: inline-block; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .reset-btn {
-      margin-top: 8px; padding: 8px; border-radius: 6px;
-      border: 1px solid #374151; background: #1f2937;
-      color: #9ca3af; font-size: 12px; cursor: pointer;
-    }
+    .reset-btn { margin-top: 4px; padding: 7px; border-radius: 6px;
+                 border: 1px solid #374151; background: #1f2937;
+                 color: #9ca3af; font-size: 11px; cursor: pointer; }
     .reset-btn:hover { background: #374151; color: #e5e7eb; }
   `]
 })
@@ -96,10 +90,10 @@ export class ScenarioPanelComponent {
     return [
       { index: 0, icon: '🔌', label: '① Connect',         state: 'pending', action: () => this.scenario.connect()        },
       { index: 1, icon: '📋', label: '② Define Reports',  state: 'pending', action: () => this.scenario.defineReports()  },
-      { index: 2, icon: '🚚', label: '③ Carrier Arrived',  state: 'pending', action: () => this.scenario.carrierArrived() },
+      { index: 2, icon: '🚚', label: '③ Carrier Arrived', state: 'pending', action: () => this.scenario.carrierArrived() },
       { index: 3, icon: '🧪', label: '④ Select Recipe',   state: 'pending', action: () => this.scenario.selectRecipe()   },
-      { index: 4, icon: '▶️',  label: '⑤ Process Start',  state: 'pending', action: () => this.scenario.processStart()  },
-      { index: 5, icon: '⏹️',  label: '⑥ Process End',    state: 'pending', action: () => this.scenario.processEnd()    },
+      { index: 4, icon: '▶', label: '⑤ Process Start',   state: 'pending', action: () => this.scenario.processStart()   },
+      { index: 5, icon: '⏹', label: '⑥ Process End',     state: 'pending', action: () => this.scenario.processEnd()     },
       { index: 6, icon: '🔒', label: '⑦ Disconnect',      state: 'pending', action: () => this.scenario.disconnect()    },
     ];
   }
@@ -119,7 +113,5 @@ export class ScenarioPanelComponent {
     });
   }
 
-  reset() {
-    this.steps = this.buildSteps();
-  }
+  reset() { this.steps = this.buildSteps(); }
 }

@@ -1,0 +1,29 @@
+[
+  {
+    "id": "normal",
+    "name": "Normal Process Run",
+    "description": "Standard Track-In/Out, no alarms",
+    "lotId": "LOT-2026-001",
+    "ppid": "RCP-PHOTO-A1",
+    "waferCount": 25,
+    "triggerAlarm": false
+  },
+  {
+    "id": "alarm-scenario",
+    "name": "Alarm Recovery",
+    "description": "Mid-process temperature alarm with recovery",
+    "lotId": "LOT-2026-002",
+    "ppid": "RCP-PHOTO-A1",
+    "waferCount": 25,
+    "triggerAlarm": true
+  },
+  {
+    "id": "alt-recipe",
+    "name": "Alternative Recipe",
+    "description": "Different recipe RCP-PHOTO-B2 with 13 wafers",
+    "lotId": "LOT-2026-003",
+    "ppid": "RCP-PHOTO-B2",
+    "waferCount": 13,
+    "triggerAlarm": false
+  }
+]

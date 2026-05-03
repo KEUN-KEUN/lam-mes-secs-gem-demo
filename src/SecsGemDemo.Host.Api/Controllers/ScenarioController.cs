@@ -10,7 +10,8 @@ public sealed class ScenarioController(
     ScenarioOrchestrator orchestrator,
     MasterDataStore masterData,
     GemStateTracker stateTracker,
-    IHttpClientFactory httpFactory) : ControllerBase
+    ScenarioStore scenarioStore,
+    EquipmentProxy proxy) : ControllerBase
 {
     [HttpPost("connect")]
     public async Task<IActionResult> Connect(CancellationToken ct)
@@ -40,30 +41,40 @@ public sealed class ScenarioController(
         return Ok(new { step = "disconnect", status = "ok" });
     }
 
-    // Equipment proxy endpoints — Host calls Equipment HTTP API to trigger events
     [HttpPost("carrier-arrived")]
     public async Task<IActionResult> CarrierArrived(CancellationToken ct)
     {
-        var client = httpFactory.CreateClient("equipment");
-        await client.PostAsync("/equipment/carrier-arrived", null, ct);
+        await proxy.CarrierArrivedAsync(masterData.Lot.LotId, ct);
         return Ok(new { step = "carrier-arrived", status = "triggered" });
     }
 
     [HttpPost("process-start")]
     public async Task<IActionResult> ProcessStart(CancellationToken ct)
     {
-        var client = httpFactory.CreateClient("equipment");
-        await client.PostAsync("/equipment/process-start", null, ct);
-        await client.PostAsync("/equipment/trace-start", null, ct);
+        await proxy.ProcessStartAsync(masterData.Lot.LotId, masterData.Recipe.Ppid, masterData.Lot.WaferCount, ct);
+        await proxy.TraceStartAsync(ct);
         return Ok(new { step = "process-start", status = "triggered" });
     }
 
     [HttpPost("process-end")]
     public async Task<IActionResult> ProcessEnd(CancellationToken ct)
     {
-        var client = httpFactory.CreateClient("equipment");
-        await client.PostAsync("/equipment/process-end", null, ct);
+        await proxy.ProcessEndAsync(ct);
         return Ok(new { step = "process-end", status = "triggered" });
+    }
+
+    [HttpPost("alarm-set")]
+    public async Task<IActionResult> AlarmSet(CancellationToken ct)
+    {
+        await proxy.AlarmSetAsync(ct);
+        return Ok(new { step = "alarm-set", status = "triggered" });
+    }
+
+    [HttpPost("alarm-clear")]
+    public async Task<IActionResult> AlarmClear(CancellationToken ct)
+    {
+        await proxy.AlarmClearAsync(ct);
+        return Ok(new { step = "alarm-clear", status = "triggered" });
     }
 
     [HttpGet("status")]
@@ -72,10 +83,10 @@ public sealed class ScenarioController(
         var lot = masterData.Lot;
         return Ok(new
         {
-            lot       = lot.LotId,
-            step      = lot.CurrentStep,
-            recipe    = masterData.Recipe.Ppid,
-            equipment = masterData.Equipment.Name,
+            lot          = lot.LotId,
+            step         = lot.CurrentStep,
+            recipe       = masterData.Recipe.Ppid,
+            equipment    = masterData.Equipment.Name,
             commState    = stateTracker.CommState,
             processState = stateTracker.ProcessState
         });
@@ -84,4 +95,34 @@ public sealed class ScenarioController(
     [HttpGet("state")]
     public IActionResult State() =>
         Ok(new GemStateDto(stateTracker.CommState, stateTracker.ProcessState));
+
+    [HttpGet("history/{lotId}")]
+    public IActionResult GetHistory(string lotId)
+    {
+        var history = masterData.GetHistory(lotId);
+        if (history is null)
+            return NotFound(new { lotId, message = "No history found" });
+        return Ok(history);
+    }
+
+    [HttpGet("definitions")]
+    public IActionResult GetDefinitions() => Ok(scenarioStore.Definitions);
+
+    [HttpPost("run/{id}")]
+    public IActionResult RunScenario(string id)
+    {
+        var def = scenarioStore.Get(id);
+        if (def is null) return NotFound(new { id, message = "Scenario not found" });
+
+        _ = Task.Run(async () =>
+        {
+            try   { await orchestrator.RunScenarioAsync(def, CancellationToken.None); }
+            catch (Exception ex) { Serilog.Log.Error(ex, "[SCENARIO] RunScenario failed: {Id}", id); }
+        });
+
+        return Accepted(new { scenarioId = id, status = "running" });
+    }
+
+    [HttpGet("results")]
+    public IActionResult GetResults() => Ok(scenarioStore.Results);
 }
