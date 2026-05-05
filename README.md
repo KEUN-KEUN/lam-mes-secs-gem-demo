@@ -1,4 +1,4 @@
-# LAM-MES: SECS/GEM Equipment–MES Communication Demo
+# SECS/GEM Equipment–MES Communication Demo
 
 A full-stack demonstration of **SEMI E5 (SECS-II) / E30 (GEM)** protocol communication between semiconductor manufacturing equipment and an MES host. Built with **.NET 8** (C#) and **Angular 17**, this system simulates real-world Track-In/Out, Recipe selection, Trace data collection, and Alarm handling using actual HSMS TCP connections — not mocks.
 
@@ -117,7 +117,7 @@ This project demonstrates a realistic MES ↔ Equipment integration layer as imp
 ## Project Structure
 
 ```
-LAM-MES/
+SecsGemDemo/
 ├── src/
 │   ├── SecsGemDemo.Domain/              # Shared models & catalogs
 │   │   ├── Catalogs/                    # CEID, DVID, SVID, Alarm ID constants
