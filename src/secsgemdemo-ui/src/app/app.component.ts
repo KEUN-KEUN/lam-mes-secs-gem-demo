@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StatePanelComponent }        from './components/state-panel/state-panel.component';
 import { MessageLogComponent }        from './components/message-log/message-log.component';
+import { ScenarioPanelComponent }     from './components/scenario-panel/scenario-panel.component';
 import { TraceChartComponent }        from './components/trace-chart/trace-chart.component';
 import { ProcessHistoryComponent }    from './components/process-history/process-history.component';
 import { AlarmPanelComponent }        from './components/alarm-panel/alarm-panel.component';
@@ -17,6 +18,7 @@ import { SignalrService }             from './services/signalr.service';
     CommonModule,
     StatePanelComponent,
     MessageLogComponent,
+    ScenarioPanelComponent,
     TraceChartComponent,
     ProcessHistoryComponent,
     AlarmPanelComponent,
@@ -28,6 +30,6 @@ import { SignalrService }             from './services/signalr.service';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  activeTab = 'states';
+  activeTab = 'trace';
   constructor(public signalr: SignalrService) {}
 }

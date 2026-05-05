@@ -6,7 +6,8 @@
     "lotId": "LOT-2026-001",
     "ppid": "RCP-PHOTO-A1",
     "waferCount": 25,
-    "triggerAlarm": false
+    "triggerAlarm": false,
+    "processSeconds": 15
   },
   {
     "id": "alarm-scenario",
@@ -15,7 +16,8 @@
     "lotId": "LOT-2026-002",
     "ppid": "RCP-PHOTO-A1",
     "waferCount": 25,
-    "triggerAlarm": true
+    "triggerAlarm": true,
+    "processSeconds": 15
   },
   {
     "id": "alt-recipe",
@@ -24,6 +26,7 @@
     "lotId": "LOT-2026-003",
     "ppid": "RCP-PHOTO-B2",
     "waferCount": 13,
-    "triggerAlarm": false
+    "triggerAlarm": false,
+    "processSeconds": 10
   }
 ]

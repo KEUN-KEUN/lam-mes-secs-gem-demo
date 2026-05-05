@@ -7,4 +7,5 @@ public record ScenarioDefinition(
     string LotId,
     string Ppid,
     int    WaferCount,
-    bool   TriggerAlarm);
+    bool   TriggerAlarm,
+    int    ProcessSeconds = 15);

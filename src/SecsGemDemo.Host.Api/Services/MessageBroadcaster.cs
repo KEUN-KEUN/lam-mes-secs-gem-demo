@@ -23,4 +23,7 @@ public sealed class MessageBroadcaster(IHubContext<SecsHub> hub)
 
     public Task BroadcastScenarioResultAsync(ScenarioResultDto dto, CancellationToken ct = default) =>
         hub.Clients.All.SendAsync("ScenarioCompleted", dto, ct);
+
+    public Task BroadcastScenarioStartedAsync(string scenarioId, CancellationToken ct = default) =>
+        hub.Clients.All.SendAsync("ScenarioStarted", scenarioId, ct);
 }

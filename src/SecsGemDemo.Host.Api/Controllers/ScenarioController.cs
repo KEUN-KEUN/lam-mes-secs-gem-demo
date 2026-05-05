@@ -11,6 +11,7 @@ public sealed class ScenarioController(
     MasterDataStore masterData,
     GemStateTracker stateTracker,
     ScenarioStore scenarioStore,
+    MessageBroadcaster broadcaster,
     EquipmentProxy proxy) : ControllerBase
 {
     [HttpPost("connect")]
@@ -116,8 +117,20 @@ public sealed class ScenarioController(
 
         _ = Task.Run(async () =>
         {
-            try   { await orchestrator.RunScenarioAsync(def, CancellationToken.None); }
-            catch (Exception ex) { Serilog.Log.Error(ex, "[SCENARIO] RunScenario failed: {Id}", id); }
+            try
+            {
+                await orchestrator.RunScenarioAsync(def, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Error(ex, "[SCENARIO] RunScenario failed: {Id}", id);
+                var run = scenarioStore.StartRun(def);
+                scenarioStore.CompleteRun(run, "FAIL");
+                await broadcaster.BroadcastScenarioResultAsync(new ScenarioResultDto(
+                    run.RunId, run.ScenarioName, run.LotId, run.Ppid, run.WaferCount,
+                    run.StartTime, run.EndTime, "FAIL", 0, run.DurationSeconds),
+                    CancellationToken.None);
+            }
         });
 
         return Accepted(new { scenarioId = id, status = "running" });

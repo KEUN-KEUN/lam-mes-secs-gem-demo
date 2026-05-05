@@ -45,22 +45,31 @@ public sealed class EventSubscriber(
     // S6F11: Event Report (Equipment → Host)
     private async Task HandleS6F11Async(SecsMessage msg, PrimaryMessageWrapper e, CancellationToken ct)
     {
-        var root = msg.SecsItem!;
-        var ceid = root.Items[1].FirstValue<uint>();
-
-        await e.TryReplyAsync(new SecsMessage(6, 12, replyExpected: false)
+        // S6F12 reply를 먼저 전송 — Equipment의 secsGem.SendAsync 블로킹 즉시 해제
+        var s6f12 = new SecsMessage(6, 12, replyExpected: false)
         {
             Name = "Event Report Ack",
             SecsItem = B(0x00)
-        }, ct);
+        };
+        await e.TryReplyAsync(s6f12, ct);
 
+        var root = msg.SecsItem!;
+        var ceid = root.Items[1].FirstValue<uint>();
+
+        Serilog.Log.Information("[HOST] S6F11 CEID={Ceid}", ceid);
+
+        // reply 전송 후 로그 (순서 역전 방지)
         await broadcaster.BroadcastMessageAsync(new SecsMessageDto(
             "E→H", msg.S, msg.F,
             $"Event Report CEID={ceid}",
             FormatSml(msg),
             DateTime.UtcNow.ToString("HH:mm:ss.fff")), ct);
 
-        Serilog.Log.Information("[HOST] S6F11 CEID={Ceid}", ceid);
+        await broadcaster.BroadcastMessageAsync(new SecsMessageDto(
+            "H→E", s6f12.S, s6f12.F,
+            s6f12.Name,
+            FormatSml(s6f12),
+            DateTime.UtcNow.ToString("HH:mm:ss.fff")), ct);
 
         var reportItems = root.Items[2].Items;
 
@@ -82,7 +91,7 @@ public sealed class EventSubscriber(
             stateTracker.SetProcess("Executing");
             await broadcaster.BroadcastStateAsync(new GemStateDto(stateTracker.CommState, stateTracker.ProcessState), ct);
             await broadcaster.BroadcastLotHistoryAsync(
-                new LotHistoryDto(lotId, ppid, start, null, null, 25), ct);
+                new LotHistoryDto(lotId, ppid, start, null, null, masterData.Lot.WaferCount), ct);
         }
         else if (ceid == CeidCatalog.ProcessEnd)
         {
@@ -99,7 +108,7 @@ public sealed class EventSubscriber(
             var history = masterData.GetHistory(lotId);
             if (history is not null)
                 await broadcaster.BroadcastLotHistoryAsync(
-                    new LotHistoryDto(lotId, history.Ppid, history.StartTime, endTime, result, 25), ct);
+                    new LotHistoryDto(lotId, history.Ppid, history.StartTime, endTime, result, masterData.Lot.WaferCount), ct);
         }
         else if (ceid == CeidCatalog.Trace)
         {
@@ -120,21 +129,29 @@ public sealed class EventSubscriber(
         var alarmId   = root.Items[1].FirstValue<uint>();
         var alarmText = root.Items[2].GetString() ?? "";
         var isSet     = (alcd & 0x80) != 0;
+        var action    = isSet ? "SET" : "CLEAR";
 
-        // S5F2: Alarm Report Ack
-        await e.TryReplyAsync(new SecsMessage(5, 2, replyExpected: false)
+        Serilog.Log.Information("[ALARM] S5F1 {Action} ALID={Id} Text={Text}", action, alarmId, alarmText);
+
+        // S5F2 reply를 먼저 전송 — Equipment의 secsGem.SendAsync 블로킹 즉시 해제
+        var s5f2 = new SecsMessage(5, 2, replyExpected: false)
         {
             Name = "Alarm Report Ack",
             SecsItem = B(0x00)
-        }, ct);
+        };
+        await e.TryReplyAsync(s5f2, ct);
 
-        Serilog.Log.Information("[ALARM] S5F1 {Action} ALID={Id} Text={Text}",
-            isSet ? "SET" : "CLEAR", alarmId, alarmText);
-
+        // reply 전송 후 로그
         await broadcaster.BroadcastMessageAsync(new SecsMessageDto(
             "E→H", msg.S, msg.F,
-            $"Alarm {(isSet ? "SET" : "CLEAR")} ALID={alarmId}",
+            $"Alarm {action} ALID={alarmId}",
             FormatSml(msg),
+            DateTime.UtcNow.ToString("HH:mm:ss.fff")), ct);
+
+        await broadcaster.BroadcastMessageAsync(new SecsMessageDto(
+            "H→E", s5f2.S, s5f2.F,
+            s5f2.Name,
+            FormatSml(s5f2),
             DateTime.UtcNow.ToString("HH:mm:ss.fff")), ct);
 
         await broadcaster.BroadcastAlarmAsync(

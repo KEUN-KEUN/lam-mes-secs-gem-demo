@@ -11,12 +11,21 @@
       <span class="conn-dot" [class.connected]="(signalr.connected$ | async)"></span>
       <span class="conn-label">{{ (signalr.connected$ | async) ? 'SignalR Connected' : 'SignalR Disconnected' }}</span>
     </div>
+    <div class="header-badges">
+      <span class="badge">SEMI E5 / E30 / E37</span>
+      <span class="badge">Secs4Net 2.4.4</span>
+      <span class="badge">.NET 8 + Angular 17</span>
+    </div>
   </header>
 
   <main class="app-main">
     <aside class="sidebar">
       <app-scenario-selector />
+      <div class="divider"></div>
       <app-state-panel />
+      <div class="divider"></div>
+      <app-scenario-panel />
+      <div class="divider"></div>
       <app-alarm-panel />
     </aside>
 

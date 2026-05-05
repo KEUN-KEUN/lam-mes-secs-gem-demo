@@ -12,38 +12,58 @@ const MAX_MESSAGES = 1000;
   template: `
     <div class="msg-panel">
       <div class="panel-header">
-        <h3 class="panel-title">Message Log <span class="count">({{ messages.length }})</span></h3>
+        <div>
+          <h3 class="panel-title">
+            SECS Message Log
+            <span class="count" *ngIf="filtered.length === messages.length">({{ messages.length }})</span>
+            <span class="count" *ngIf="filtered.length !== messages.length">({{ filtered.length }} / {{ messages.length }})</span>
+          </h3>
+          <div class="panel-sub">Click row to view SML</div>
+        </div>
         <button class="clear-btn" (click)="clear()">Clear</button>
+      </div>
+
+      <div class="filter-row">
+        <div class="dir-filters">
+          <button class="dir-btn" [class.active]="filterDir === 'all'" (click)="setDir('all')">All</button>
+          <button class="dir-btn" [class.active]="filterDir === 'H→E'" (click)="setDir('H→E')">H→E</button>
+          <button class="dir-btn" [class.active]="filterDir === 'E→H'" (click)="setDir('E→H')">E→H</button>
+        </div>
+        <input class="filter-input" type="text" [value]="filterText"
+               (input)="onFilterInput($event)" placeholder="메시지 이름, S/F 번호 검색…">
       </div>
 
       <div class="log-table-wrap" #scrollContainer>
         <table class="log-table">
           <thead>
             <tr>
+              <th>#</th>
               <th>Time</th>
               <th>Dir</th>
               <th>S/F</th>
-              <th>Name</th>
+              <th>Message Name</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let m of messages" (click)="select(m)" [class.selected]="selected === m">
-              <td class="ts">{{ m.timestamp }}</td>
-              <td><span class="dir-badge" [ngClass]="m.direction === 'H→E' ? 'h2e' : 'e2h'">{{ m.direction }}</span></td>
-              <td class="sf">S{{ m.s }}F{{ m.f }}</td>
-              <td class="name">{{ m.name }}</td>
+            <tr *ngFor="let m of filtered; let i = index" (click)="select(m)" [class.selected]="selected === m">
+              <td>{{ i + 1 }}</td>
+              <td>{{ m.timestamp }}</td>
+              <td>{{ m.direction }}</td>
+              <td>S{{ m.s }}F{{ m.f }}</td>
+              <td>{{ m.name }}</td>
             </tr>
           </tbody>
         </table>
         <div *ngIf="messages.length === 0" class="empty">Waiting for SECS messages…</div>
+        <div *ngIf="messages.length > 0 && filtered.length === 0" class="empty">필터 조건에 맞는 메시지가 없습니다.</div>
       </div>
     </div>
 
     <div class="modal-backdrop" *ngIf="selected" (click)="selected = null">
       <div class="modal" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <span class="dir-badge lg" [ngClass]="selected.direction === 'H→E' ? 'h2e' : 'e2h'">{{ selected.direction }}</span>
-          <span class="modal-title">S{{ selected.s }}F{{ selected.f }} — {{ selected.name }}</span>
+          <span class="modal-meta">S{{ selected.s }}F{{ selected.f }} &nbsp;·&nbsp; {{ selected.direction }}</span>
+          <span class="modal-title">{{ selected.name }}</span>
           <button class="close-btn" (click)="selected = null">✕</button>
         </div>
         <pre class="sml">{{ selected.sml }}</pre>
@@ -51,55 +71,62 @@ const MAX_MESSAGES = 1000;
     </div>
   `,
   styles: [`
-    .msg-panel { display: flex; flex-direction: column; height: 100%; }
-    .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .panel-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
-                   color: #6b7280; text-transform: uppercase; margin: 0; }
-    .count { font-weight: 400; color: #4b5563; }
-    .clear-btn { font-size: 11px; padding: 2px 10px; border-radius: 4px;
-                 border: 1px solid #374151; background: #1f2937; color: #9ca3af; cursor: pointer; }
-    .clear-btn:hover { background: #374151; color: #e5e7eb; }
+    :host { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+    .msg-panel { display: flex; flex-direction: column; height: 100%; min-height: 0; }
 
-    .log-table-wrap { flex: 1; overflow-y: auto; border-radius: 8px;
-                      border: 1px solid #374151; min-height: 0; }
-    .log-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    .log-table thead tr { position: sticky; top: 0; z-index: 1; }
-    .log-table th { padding: 8px 10px; background: #111827; color: #6b7280;
-                    font-weight: 600; text-transform: uppercase; font-size: 10px;
-                    letter-spacing: 0.06em; border-bottom: 1px solid #374151; text-align: left; }
-    .log-table tbody tr { border-bottom: 1px solid #1f2937; cursor: pointer; transition: background 0.1s; }
-    .log-table tbody tr:hover { background: #1f2937; }
-    .log-table tbody tr.selected { background: #1e3a5f; }
-    .log-table td { padding: 6px 10px; color: #d1d5db; }
-    .ts { color: #6b7280; white-space: nowrap; font-family: monospace; }
-    .sf { font-family: monospace; font-weight: 600; color: #e5e7eb; white-space: nowrap; }
-    .name { color: #9ca3af; }
+    .panel-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; gap: 12px; }
+    .panel-title { font-size: 17px; font-weight: 700; color: #111827; margin: 0 0 3px; }
+    .panel-sub { font-size: 14px; color: #6b7280; }
+    .count { font-weight: 400; color: #9ca3af; }
 
-    .dir-badge { display: inline-block; padding: 2px 6px; border-radius: 4px;
-                 font-size: 10px; font-weight: 700; white-space: nowrap; font-family: monospace; }
-    .dir-badge.lg { font-size: 12px; padding: 3px 10px; }
-    .h2e { background: #1e3a5f; color: #60a5fa; border: 1px solid #2563eb; }
-    .e2h { background: #064e3b; color: #6ee7b7; border: 1px solid #059669; }
-    .empty { padding: 32px; text-align: center; color: #4b5563; font-size: 13px; }
+    .clear-btn { font-size: 14px; padding: 5px 14px; flex-shrink: 0;
+                 border: 1px solid #d1d5db; background: none; color: #6b7280; cursor: pointer;
+                 font-family: 'Noto Sans KR', system-ui, sans-serif; }
+    .clear-btn:hover { color: #111827; }
 
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    .filter-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .dir-filters { display: flex; gap: 0; border: 1px solid #d1d5db; }
+    .dir-btn { font-family: 'Noto Sans KR', system-ui, sans-serif; font-size: 14px; font-weight: 600;
+               padding: 5px 14px; border: none; background: none; color: #6b7280; cursor: pointer;
+               border-right: 1px solid #d1d5db; }
+    .dir-btn:last-child { border-right: none; }
+    .dir-btn:hover { background: #f9fafb; color: #111827; }
+    .dir-btn.active { background: #111827; color: #fff; }
+    .filter-input { flex: 1; font-family: 'Noto Sans KR', system-ui, sans-serif; font-size: 14px;
+                    padding: 5px 10px; border: 1px solid #d1d5db; color: #111827; outline: none; }
+    .filter-input::placeholder { color: #d1d5db; }
+    .filter-input:focus { border-color: #6b7280; }
+
+    .log-table-wrap { flex: 1; overflow-y: auto; min-height: 0; }
+    .log-table { width: 100%; border-collapse: collapse; color: #111827; }
+    .log-table thead tr { position: sticky; top: 0; z-index: 1; background: #fff; }
+    .log-table th { font-family: 'Noto Sans KR', system-ui, sans-serif; font-size: 18px; font-weight: 700; padding: 11px 16px; text-align: left; border-bottom: 2px solid #111827; }
+    .log-table td { font-family: 'Noto Sans KR', system-ui, sans-serif; font-size: 18px; padding: 11px 16px; text-align: left; }
+    .log-table tbody tr { border-bottom: 1px solid #e5e7eb; cursor: pointer; }
+    .log-table tbody tr.selected { font-weight: 700; }
+
+    .empty { padding: 40px; text-align: center; color: #d1d5db; font-size: 15px; }
+
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.35);
                       display: flex; align-items: center; justify-content: center; z-index: 100; }
-    .modal { background: #111827; border: 1px solid #374151; border-radius: 12px;
-             width: 600px; max-width: 90vw; max-height: 80vh;
+    .modal { background: #fff; border: 1px solid #d1d5db; width: 660px; max-width: 92vw; max-height: 80vh;
              display: flex; flex-direction: column; overflow: hidden; }
-    .modal-header { display: flex; align-items: center; gap: 12px;
-                    padding: 16px 20px; border-bottom: 1px solid #374151; }
-    .modal-title { flex: 1; font-size: 14px; font-weight: 600; color: #e5e7eb; }
-    .close-btn { background: none; border: none; color: #6b7280; font-size: 18px; cursor: pointer; }
-    .close-btn:hover { color: #e5e7eb; }
-    .sml { margin: 0; padding: 20px; font-family: 'Courier New', monospace;
-           font-size: 12px; color: #a3e635; background: #0a0f1a;
-           overflow: auto; white-space: pre; line-height: 1.6; }
+    .modal-header { display: flex; align-items: baseline; gap: 16px;
+                    padding: 14px 18px; border-bottom: 1px solid #374151; }
+    .modal-meta  { font-family: 'JetBrains Mono', 'Consolas', monospace; font-size: 16px; font-weight: 700; color: #111827; white-space: nowrap; }
+    .modal-title { flex: 1; font-size: 16px; font-weight: 500; color: #374151; }
+    .close-btn { background: none; border: none; color: #9ca3af; font-size: 18px; cursor: pointer; line-height: 1; padding: 0; }
+    .close-btn:hover { color: #111827; }
+    .sml { margin: 0; padding: 20px; font-family: 'JetBrains Mono', 'Consolas', monospace;
+           font-size: 14px; color: #111827; background: #fff;
+           overflow: auto; white-space: pre; line-height: 1.8; }
   `]
 })
 export class MessageLogComponent implements OnInit, OnDestroy, AfterViewChecked {
   messages: SecsMessageDto[] = [];
   selected: SecsMessageDto | null = null;
+  filterDir: 'all' | 'H→E' | 'E→H' = 'all';
+  filterText = '';
   private sub?: Subscription;
   private shouldScroll = false;
 
@@ -110,10 +137,10 @@ export class MessageLogComponent implements OnInit, OnDestroy, AfterViewChecked 
   ngOnInit() {
     this.sub = this.signalr.message$.subscribe(m => {
       this.messages.push(m);
-      // 상한 1000건 유지
       if (this.messages.length > MAX_MESSAGES)
         this.messages.splice(0, this.messages.length - MAX_MESSAGES);
-      this.shouldScroll = true;
+      if (this.passesFilter(m))
+        this.shouldScroll = true;
     });
   }
 
@@ -126,6 +153,22 @@ export class MessageLogComponent implements OnInit, OnDestroy, AfterViewChecked 
   }
 
   ngOnDestroy() { this.sub?.unsubscribe(); }
+
+  get filtered(): SecsMessageDto[] {
+    return this.messages.filter(m => this.passesFilter(m));
+  }
+
+  private passesFilter(m: SecsMessageDto): boolean {
+    const dirOk = this.filterDir === 'all' || m.direction === this.filterDir;
+    const txt = this.filterText.trim().toLowerCase();
+    const textOk = !txt ||
+      m.name.toLowerCase().includes(txt) ||
+      `s${m.s}f${m.f}`.includes(txt);
+    return dirOk && textOk;
+  }
+
+  setDir(dir: 'all' | 'H→E' | 'E→H') { this.filterDir = dir; }
+  onFilterInput(e: Event) { this.filterText = (e.target as HTMLInputElement).value; }
 
   select(m: SecsMessageDto) { this.selected = this.selected === m ? null : m; }
   clear() { this.messages = []; this.selected = null; }

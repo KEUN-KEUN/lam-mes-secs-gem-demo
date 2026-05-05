@@ -39,6 +39,8 @@ public sealed class ScenarioOrchestrator(
         await SelectRecipeAsync(def.Ppid, ct);
         await Task.Delay(500, ct);
 
+        await broadcaster.BroadcastScenarioStartedAsync(def.Id, ct);
+
         await equipmentProxy.ProcessStartAsync(def.LotId, def.Ppid, def.WaferCount, ct);
         await equipmentProxy.TraceStartAsync(ct);
 
@@ -49,11 +51,11 @@ public sealed class ScenarioOrchestrator(
             run.AlarmCount++;
             await Task.Delay(3000, ct);
             await equipmentProxy.AlarmClearAsync(ct);
-            await Task.Delay(7000, ct);
+            await Task.Delay((def.ProcessSeconds - 8) * 1000, ct);
         }
         else
         {
-            await Task.Delay(15000, ct);
+            await Task.Delay(def.ProcessSeconds * 1000, ct);
         }
 
         await equipmentProxy.ProcessEndAsync(ct);
@@ -169,9 +171,6 @@ public sealed class ScenarioOrchestrator(
         stateTracker.SetComm("NotCommunicating");
         stateTracker.SetProcess("Idle");
         await broadcaster.BroadcastStateAsync(new GemStateDto(stateTracker.CommState, stateTracker.ProcessState), ct);
-
-        if (hsmsConnection is IAsyncDisposable disposable)
-            await disposable.DisposeAsync();
     }
 
     private async Task<SecsMessage> SendAndLogAsync(SecsMessage msg, CancellationToken ct)

@@ -11,10 +11,7 @@ import { SignalrService, ScenarioResultDto } from '../../services/signalr.servic
   template: `
     <div class="results-wrap">
       <div class="results-header">
-        <div>
-          <div class="panel-title">Scenario Results</div>
-          <div class="panel-sub">Per-scenario PASS/FAIL · Lot ID · Recipe · Duration</div>
-        </div>
+        <span class="panel-title">Scenario Results</span>
         <span class="count-badge">{{ results.length }} run{{ results.length !== 1 ? 's' : '' }}</span>
       </div>
 
@@ -58,45 +55,107 @@ import { SignalrService, ScenarioResultDto } from '../../services/signalr.servic
     </div>
   `,
   styles: [`
-    :host { display: flex; flex-direction: column; height: 100%; }
     .results-wrap {
-      display: flex; flex-direction: column; height: 100%;
-      background: #fff; border: 1px solid #e2e8f0; border-radius: 8px;
-      padding: 12px; box-sizing: border-box; overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      max-height: 220px;
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 8px;
+      padding: 12px;
+      box-sizing: border-box;
+      overflow: hidden;
     }
     .results-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 10px; flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      flex-shrink: 0;
     }
-    .panel-title { font-size: 17px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
-    .panel-sub { font-size: 15px; color: #64748b; }
-    .count-badge { font-size: 15px; color: #64748b; background: #f1f5f9;
-                   padding: 4px 12px; border-radius: 12px; white-space: nowrap; }
-    .results-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-    .empty-msg { color: #94a3b8; font-size: 16px; text-align: center; padding: 32px 0; }
+    .panel-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .count-badge {
+      font-size: 10px;
+      color: #4b5563;
+      background: #1f2937;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+    .results-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .empty-msg {
+      color: #4b5563;
+      font-size: 12px;
+      text-align: center;
+      padding: 24px 0;
+    }
     .result-card {
-      border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px;
-      background: #fff; transition: box-shadow 0.15s;
+      border: 1px solid #1f2937;
+      border-radius: 7px;
+      padding: 10px 12px;
+      background: #0d1117;
+      transition: border-color 0.2s;
     }
-    .result-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
-    .card-pass { border-left: 4px solid #22c55e; }
-    .card-fail { border-left: 4px solid #ef4444; }
-    .card-running { border-left: 4px solid #f59e0b; }
-    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
-    .scenario-name { font-size: 16px; font-weight: 700; color: #0f172a; }
-    .result-badge { font-size: 15px; font-weight: 700; padding: 5px 14px;
-                    border-radius: 12px; letter-spacing: 0.02em; }
-    .badge-pass { background: #dcfce7; color: #15803d; }
-    .badge-fail { background: #fee2e2; color: #dc2626; }
-    .badge-run  { background: #fef3c7; color: #d97706; }
-    .card-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 7px; }
-    .meta-item { font-size: 15px; color: #64748b; }
-    .meta-sep  { font-size: 15px; color: #cbd5e1; }
-    .alarm-tag { margin-left: 6px; font-size: 14px; color: #ea580c;
-                 background: #fff7ed; padding: 3px 10px; border-radius: 10px; }
-    .card-bottom { display: flex; justify-content: space-between; align-items: center; }
-    .time-label { font-size: 15px; color: #94a3b8; }
-    .duration   { font-size: 16px; color: #1d4ed8; font-weight: 700; }
+    .card-pass { border-left: 3px solid #16a34a; }
+    .card-fail { border-left: 3px solid #dc2626; }
+    .card-running { border-left: 3px solid #f59e0b; }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .scenario-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #e5e7eb;
+    }
+    .result-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      letter-spacing: 0.04em;
+    }
+    .badge-pass { background: #14532d; color: #4ade80; }
+    .badge-fail { background: #450a0a; color: #f87171; }
+    .badge-run  { background: #451a03; color: #fbbf24; }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 5px;
+    }
+    .meta-item { font-size: 11px; color: #9ca3af; }
+    .meta-sep  { font-size: 11px; color: #374151; }
+    .alarm-tag {
+      margin-left: 6px;
+      font-size: 10px;
+      color: #f97316;
+      background: #431407;
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+    .card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .time-label { font-size: 10px; color: #4b5563; font-family: monospace; }
+    .duration   { font-size: 11px; color: #60a5fa; font-weight: 600; }
   `]
 })
 export class ScenarioResultsComponent implements OnInit, OnDestroy {

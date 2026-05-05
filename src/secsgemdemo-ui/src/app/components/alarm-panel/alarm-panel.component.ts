@@ -10,13 +10,10 @@ import { ScenarioService } from '../../services/scenario.service';
   imports: [CommonModule],
   template: `
     <div class="alarm-panel">
-      <div class="panel-header">
-        <div class="title-row">
-          <h3 class="panel-title">Alarms</h3>
-          <span class="alarm-count" *ngIf="activeAlarms.length > 0">{{ activeAlarms.length }}</span>
-        </div>
-        <span class="panel-sub">S5F1 Set · S5F2 Clear · GEM Pause Transition</span>
-      </div>
+      <h3 class="panel-title">
+        Alarms
+        <span class="alarm-count" *ngIf="activeAlarms.length > 0">{{ activeAlarms.length }}</span>
+      </h3>
 
       <div class="alarm-list" *ngIf="activeAlarms.length > 0">
         <div class="alarm-item" *ngFor="let a of activeAlarms">
@@ -45,39 +42,38 @@ import { ScenarioService } from '../../services/scenario.service';
   `,
   styles: [`
     .alarm-panel { display: flex; flex-direction: column; gap: 10px; }
-    .panel-header { margin-bottom: 2px; }
-    .title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
-    .panel-title { font-size: 17px; font-weight: 700; color: #0f172a; margin: 0; }
-    .panel-sub { font-size: 15px; color: #94a3b8; }
-    .alarm-count { background: #dc2626; color: #fff; border-radius: 10px;
-                   padding: 2px 8px; font-size: 15px; font-weight: 700; }
+    .panel-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+                   color: #6b7280; text-transform: uppercase; margin: 0;
+                   display: flex; align-items: center; gap: 8px; }
+    .alarm-count { background: #ef4444; color: #fff; border-radius: 10px;
+                   padding: 1px 6px; font-size: 10px; font-weight: 700; }
 
     .alarm-list { display: flex; flex-direction: column; gap: 6px; }
     .alarm-item { display: flex; align-items: flex-start; gap: 8px;
-                  background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 8px; padding: 10px 12px; }
-    .alarm-icon { font-size: 18px; color: #dc2626; flex-shrink: 0; }
+                  background: #1a0404; border: 1px solid #ef4444; border-radius: 6px; padding: 8px 10px; }
+    .alarm-icon { font-size: 14px; color: #ef4444; flex-shrink: 0; }
     .alarm-body { flex: 1; }
-    .alarm-text { font-size: 15px; font-weight: 600; color: #991b1b; }
-    .alarm-meta { font-size: 13px; color: #94a3b8; margin-top: 3px; font-family: 'JetBrains Mono', 'Consolas', monospace; }
-    .no-alarm { font-size: 15px; color: #cbd5e1; padding: 4px 0; }
+    .alarm-text { font-size: 12px; font-weight: 600; color: #fca5a5; }
+    .alarm-meta { font-size: 9px; color: #6b7280; margin-top: 2px; font-family: monospace; }
+    .no-alarm { font-size: 11px; color: #374151; padding: 4px 0; }
 
     .alarm-actions { display: flex; gap: 6px; }
-    .alarm-btn { flex: 1; padding: 10px; border-radius: 7px; font-size: 15px;
-                 font-weight: 600; cursor: pointer; border: 1.5px solid; }
-    .set-btn   { background: #fff; border-color: #fca5a5; color: #dc2626; }
-    .set-btn:hover:not([disabled])   { background: #fef2f2; }
-    .clear-btn { background: #fff; border-color: #86efac; color: #15803d; }
-    .clear-btn:hover:not([disabled]) { background: #f0fdf4; }
-    .alarm-btn[disabled] { opacity: 0.35; cursor: not-allowed; }
+    .alarm-btn { flex: 1; padding: 6px; border-radius: 5px; font-size: 11px;
+                 font-weight: 600; cursor: pointer; border: 1px solid; }
+    .set-btn   { background: #1a0404; border-color: #ef4444; color: #f87171; }
+    .set-btn:hover:not([disabled])   { background: #450a0a; }
+    .clear-btn { background: #064e3b; border-color: #10b981; color: #6ee7b7; }
+    .clear-btn:hover:not([disabled]) { background: #065f46; }
+    .alarm-btn[disabled] { opacity: 0.3; cursor: not-allowed; }
 
-    .alarm-history { border-top: 1px solid #e2e8f0; padding-top: 10px; }
-    .hist-title { font-size: 12px; color: #94a3b8; text-transform: uppercase;
-                  letter-spacing: 0.06em; margin-bottom: 6px; font-weight: 700; }
-    .hist-item { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .dot.set   { background: #dc2626; }
-    .dot.clear { background: #22c55e; }
-    .hist-text { font-size: 13px; font-family: 'JetBrains Mono', 'Consolas', monospace; color: #64748b; }
+    .alarm-history { border-top: 1px solid #1f2937; padding-top: 8px; }
+    .hist-title { font-size: 9px; color: #4b5563; text-transform: uppercase;
+                  letter-spacing: 0.08em; margin-bottom: 4px; }
+    .hist-item { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .dot.set   { background: #ef4444; }
+    .dot.clear { background: #10b981; }
+    .hist-text { font-size: 10px; font-family: monospace; color: #6b7280; }
   `]
 })
 export class AlarmPanelComponent implements OnInit, OnDestroy {

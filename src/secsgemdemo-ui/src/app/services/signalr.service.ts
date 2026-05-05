@@ -62,7 +62,6 @@ export class SignalrService implements OnDestroy {
   readonly alarm$          = new Subject<AlarmDto>();
   readonly lotHistory$     = new Subject<LotHistoryDto>();
   readonly scenarioResult$ = new Subject<ScenarioResultDto>();
-  readonly scenarioStarted$ = new Subject<string>();
   readonly connected$      = new BehaviorSubject<boolean>(false);
 
   constructor() {
@@ -77,7 +76,6 @@ export class SignalrService implements OnDestroy {
     this.hub.on('AlarmOccurred',    (dto: AlarmDto)          => this.alarm$.next(dto));
     this.hub.on('LotHistoryUpdated',(dto: LotHistoryDto)     => this.lotHistory$.next(dto));
     this.hub.on('ScenarioCompleted',(dto: ScenarioResultDto) => this.scenarioResult$.next(dto));
-    this.hub.on('ScenarioStarted',  (id: string)             => this.scenarioStarted$.next(id));
 
     this.hub.onreconnected(() => this.connected$.next(true));
     this.hub.onclose(() => this.connected$.next(false));

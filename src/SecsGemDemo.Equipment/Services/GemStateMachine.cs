@@ -39,17 +39,21 @@ public sealed class GemStateMachine
             .Permit(ProcessTrigger.StartSetup, ProcessState.Setup);
 
         _processSm.Configure(ProcessState.Setup)
-            .Permit(ProcessTrigger.SetupComplete, ProcessState.Ready);
+            .Permit(ProcessTrigger.SetupComplete, ProcessState.Ready)
+            .PermitReentry(ProcessTrigger.StartSetup);
 
         _processSm.Configure(ProcessState.Ready)
-            .Permit(ProcessTrigger.ProcessBegin, ProcessState.Executing);
+            .Permit(ProcessTrigger.ProcessBegin, ProcessState.Executing)
+            .Permit(ProcessTrigger.StartSetup,   ProcessState.Setup);
 
         _processSm.Configure(ProcessState.Executing)
             .Permit(ProcessTrigger.ProcessComplete, ProcessState.Idle)
-            .Permit(ProcessTrigger.AlarmRaised, ProcessState.Pause);
+            .Permit(ProcessTrigger.AlarmRaised,     ProcessState.Pause)
+            .Permit(ProcessTrigger.StartSetup,      ProcessState.Setup);
 
         _processSm.Configure(ProcessState.Pause)
-            .Permit(ProcessTrigger.AlarmCleared, ProcessState.Executing);
+            .Permit(ProcessTrigger.AlarmCleared, ProcessState.Executing)
+            .Permit(ProcessTrigger.StartSetup,   ProcessState.Setup);
 
         _processSm.OnTransitioned(t =>
         {

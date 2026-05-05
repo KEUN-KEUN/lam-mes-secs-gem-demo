@@ -51,8 +51,8 @@ interface Step {
     .steps { display: flex; flex-direction: column; gap: 5px; }
 
     .step {
-      display: flex; align-items: center; gap: 8px;
-      padding: 7px 10px; border-radius: 6px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 7px;
       border: 1px solid #1f2937; background: #111827;
       cursor: not-allowed; opacity: 0.4;
       transition: all 0.2s ease; user-select: none;

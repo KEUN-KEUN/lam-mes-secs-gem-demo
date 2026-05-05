@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { SignalrService, GemStateDto } from '../../services/signalr.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-state-panel',
@@ -9,72 +10,76 @@ import { SignalrService, GemStateDto } from '../../services/signalr.service';
   imports: [CommonModule],
   template: `
     <div class="state-panel">
-      <h3 class="panel-title">Equipment State</h3>
+      <div class="panel-header">
+        <h3 class="panel-title">Equipment State</h3>
+        <span class="panel-sub">SEMI E30 GEM State Machine (Live)</span>
+      </div>
 
       <div class="state-box" [ngClass]="commClass">
-        <span class="label">COMM</span>
-        <span class="value">{{ state.commState }}</span>
         <span class="dot"></span>
+        <div class="state-body">
+          <span class="label">COMM STATE</span>
+          <span class="value">{{ state.commState }}</span>
+        </div>
       </div>
 
       <div class="state-box" [ngClass]="processClass">
-        <span class="label">PROCESS</span>
-        <span class="value">{{ state.processState }}</span>
         <span class="dot"></span>
+        <div class="state-body">
+          <span class="label">PROCESS STATE</span>
+          <span class="value">{{ state.processState }}</span>
+        </div>
       </div>
     </div>
   `,
   styles: [`
-    .state-panel { display: flex; flex-direction: column; gap: 12px; }
-    .panel-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
-                   color: #6b7280; text-transform: uppercase; margin: 0 0 4px; }
+    .state-panel { display: flex; flex-direction: column; gap: 10px; }
+    .panel-header { margin-bottom: 2px; }
+    .panel-title { font-size: 17px; font-weight: 700; color: #0f172a; margin: 0 0 3px; }
+    .panel-sub { font-size: 15px; color: #94a3b8; }
     .state-box {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 16px; border-radius: 8px;
-      border: 1px solid #374151; background: #1f2937;
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px; border-radius: 10px;
+      border: 2px solid #e2e8f0; background: #f8fafc;
       transition: all 0.3s ease;
     }
-    .state-box .label {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
-      color: #9ca3af; text-transform: uppercase; width: 60px;
-    }
-    .state-box .value {
-      flex: 1; font-size: 13px; font-weight: 600; color: #e5e7eb;
-    }
-    .state-box .dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: #6b7280;
-    }
-    /* Comm states */
-    .comm-ok  { border-color: #10b981; background: #064e3b; }
-    .comm-ok .dot { background: #10b981; box-shadow: 0 0 6px #10b981; }
-    .comm-ok .value { color: #6ee7b7; }
-    .comm-err { border-color: #ef4444; background: #450a0a; }
-    .comm-err .dot { background: #ef4444; }
-    .comm-err .value { color: #fca5a5; }
-    /* Process states */
-    .proc-idle { border-color: #374151; }
-    .proc-executing { border-color: #3b82f6; background: #1e3a5f; }
-    .proc-executing .dot { background: #3b82f6; box-shadow: 0 0 6px #3b82f6; }
-    .proc-executing .value { color: #93c5fd; }
-    .proc-ready { border-color: #8b5cf6; background: #2e1065; }
+    .state-body { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+    .label { font-size: 12px; font-weight: 700; letter-spacing: 0.08em;
+             color: #94a3b8; text-transform: uppercase; }
+    .value { font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.2; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; flex-shrink: 0; }
+
+    .comm-ok  { border-color: #22c55e; background: #f0fdf4; }
+    .comm-ok .dot { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+    .comm-ok .value { color: #15803d; }
+    .comm-err { border-color: #ef4444; background: #fef2f2; }
+    .comm-err .dot { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+    .comm-err .value { color: #dc2626; }
+    .proc-idle { border-color: #e2e8f0; }
+    .proc-idle .value { color: #64748b; }
+    .proc-executing { border-color: #3b82f6; background: #eff6ff; }
+    .proc-executing .dot { background: #3b82f6; box-shadow: 0 0 8px #3b82f6; }
+    .proc-executing .value { color: #1d4ed8; }
+    .proc-ready { border-color: #8b5cf6; background: #f5f3ff; }
     .proc-ready .dot { background: #8b5cf6; }
-    .proc-ready .value { color: #c4b5fd; }
-    .proc-setup { border-color: #f59e0b; background: #451a03; }
+    .proc-ready .value { color: #7c3aed; }
+    .proc-setup { border-color: #f59e0b; background: #fffbeb; }
     .proc-setup .dot { background: #f59e0b; }
-    .proc-setup .value { color: #fcd34d; }
-    .proc-pause { border-color: #f97316; background: #431407; }
+    .proc-setup .value { color: #d97706; }
+    .proc-pause { border-color: #f97316; background: #fff7ed; }
     .proc-pause .dot { background: #f97316; }
-    .proc-pause .value { color: #fdba74; }
+    .proc-pause .value { color: #ea580c; }
   `]
 })
 export class StatePanelComponent implements OnInit, OnDestroy {
   state: GemStateDto = { commState: 'NotCommunicating', processState: 'Idle' };
   private sub?: Subscription;
 
-  constructor(private signalr: SignalrService) {}
+  constructor(private signalr: SignalrService, private http: HttpClient) {}
 
   ngOnInit() {
+    this.http.get<GemStateDto>('http://localhost:5001/scenario/state')
+      .subscribe({ next: s => this.state = s });
     this.sub = this.signalr.state$.subscribe(s => this.state = s);
   }
 

@@ -10,10 +10,7 @@ import { SignalrService, LotHistoryDto } from '../../services/signalr.service';
   template: `
     <div class="history-panel">
       <div class="panel-header">
-        <div>
-          <h3 class="panel-title">Process History</h3>
-          <div class="panel-sub">Track-In / Track-Out Records · S6F11 CEID=2,3 Received</div>
-        </div>
+        <h3 class="panel-title">Process History (Genealogy)</h3>
         <span class="count">{{ histories.length }} Lot(s)</span>
       </div>
 
@@ -49,34 +46,32 @@ import { SignalrService, LotHistoryDto } from '../../services/signalr.service';
     </div>
   `,
   styles: [`
-    :host { display: flex; flex-direction: column; height: 100%; min-height: 0; }
-    .history-panel { display: flex; flex-direction: column; height: 100%; min-height: 0; }
-    .panel-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
-    .panel-title { font-size: 17px; font-weight: 700; color: #0f172a; margin: 0 0 4px; }
-    .panel-sub { font-size: 15px; color: #64748b; }
-    .count { font-size: 15px; color: #94a3b8; white-space: nowrap; padding-top: 2px; }
+    .history-panel { display: flex; flex-direction: column; height: 100%; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .panel-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+                   color: #6b7280; text-transform: uppercase; margin: 0; }
+    .count { font-size: 11px; color: #4b5563; }
 
-    .table-wrap { flex: 1; overflow-y: auto; border-radius: 10px; border: 1px solid #e2e8f0;
-                  min-height: 0; background: #fff; }
-    .hist-table { width: 100%; border-collapse: collapse; }
+    .table-wrap { flex: 1; overflow-y: auto; border-radius: 8px; border: 1px solid #374151; min-height: 0; }
+    .hist-table { width: 100%; border-collapse: collapse; font-size: 11px; }
     .hist-table thead tr { position: sticky; top: 0; }
-    .hist-table th { padding: 12px 18px; background: #f8fafc; color: #475569;
-                     font-weight: 700; font-size: 15px;
-                     border-bottom: 2px solid #e2e8f0; text-align: left; }
-    .hist-table tbody tr { border-bottom: 1px solid #f1f5f9; }
-    .hist-table tbody tr.in-progress { background: #fffbeb; }
-    .hist-table td { padding: 12px 18px; font-size: 15px; color: #334155; }
-    .lot-id { font-family: 'JetBrains Mono', 'Consolas', monospace; font-size: 15px; font-weight: 700; color: #1d4ed8; }
-    .ppid   { font-family: 'JetBrains Mono', 'Consolas', monospace; font-size: 15px; font-weight: 600; color: #7c3aed; }
-    .time   { font-size: 15px; color: #94a3b8; white-space: nowrap; }
-    .wafer  { text-align: center; font-size: 16px; font-weight: 700; color: #475569; }
+    .hist-table th { padding: 7px 10px; background: #111827; color: #6b7280;
+                     font-weight: 600; text-transform: uppercase; font-size: 9px;
+                     letter-spacing: 0.06em; border-bottom: 1px solid #374151; text-align: left; }
+    .hist-table tbody tr { border-bottom: 1px solid #1f2937; }
+    .hist-table tbody tr.in-progress { background: #0c1a2e; }
+    .hist-table td { padding: 6px 10px; color: #d1d5db; }
+    .lot-id { font-family: monospace; font-size: 10px; color: #60a5fa; }
+    .ppid   { font-family: monospace; font-size: 10px; color: #a78bfa; }
+    .time   { font-family: monospace; font-size: 10px; color: #6b7280; white-space: nowrap; }
+    .wafer  { text-align: center; color: #9ca3af; }
 
-    .badge { display: inline-block; padding: 5px 14px; border-radius: 6px; font-size: 15px; font-weight: 700; }
-    .badge.pass       { background: #dcfce7; color: #15803d; }
-    .badge.fail       { background: #fee2e2; color: #dc2626; }
-    .badge.processing { background: #fef3c7; color: #d97706; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; }
+    .badge.pass       { background: #064e3b; color: #6ee7b7; border: 1px solid #059669; }
+    .badge.fail       { background: #450a0a; color: #fca5a5; border: 1px solid #ef4444; }
+    .badge.processing { background: #1c1408; color: #fcd34d; border: 1px solid #f59e0b; }
 
-    .empty { padding: 32px; text-align: center; color: #cbd5e1; font-size: 16px; }
+    .empty { padding: 24px; text-align: center; color: #374151; font-size: 11px; }
   `]
 })
 export class ProcessHistoryComponent implements OnInit, OnDestroy {

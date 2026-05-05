@@ -2,39 +2,40 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #f0f4f8;
-  color: #0f172a;
-  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', system-ui, sans-serif;
+  background: #0d1117;
+  color: #e5e7eb;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
 }
 
 .app-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 20px;
-  background: #0f172a;
+  padding: 12px 24px;
+  background: #111827;
+  border-bottom: 1px solid #1f2937;
   flex-shrink: 0;
 }
 
 .header-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
-.header-logo { font-size: 22px; color: #60a5fa; }
+.header-logo { font-size: 26px; color: #60a5fa; }
 
 .header-title {
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 700;
-  color: #f8fafc;
+  color: #f9fafb;
   letter-spacing: -0.01em;
 }
 
 .header-sub {
-  font-size: 12px;
-  color: #475569;
-  margin-top: 2px;
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 1px;
 }
 
 .header-center {
@@ -44,18 +45,34 @@
 }
 
 .conn-dot {
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: #ef4444;
   transition: background 0.3s;
 }
 
-.conn-dot.connected { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+.conn-dot.connected { background: #10b981; box-shadow: 0 0 5px #10b981; }
 
 .conn-label {
-  font-size: 15px;
-  color: #64748b;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.header-badges {
+  display: flex;
+  gap: 6px;
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: #1f2937;
+  border: 1px solid #374151;
+  font-size: 9px;
+  font-weight: 600;
+  color: #9ca3af;
+  letter-spacing: 0.04em;
 }
 
 .app-main {
@@ -65,30 +82,34 @@
 }
 
 .sidebar {
-  width: clamp(200px, 18vw, 260px);
+  width: 270px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 14px 12px;
-  background: #ffffff;
-  border-right: 1px solid #e2e8f0;
+  gap: 14px;
+  padding: 16px 14px;
+  background: #111827;
+  border-right: 1px solid #1f2937;
   overflow-y: auto;
+}
+
+.divider {
+  height: 1px;
+  background: #1f2937;
+  flex-shrink: 0;
 }
 
 .content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 12px;
-  gap: 10px;
+  padding: 16px;
+  gap: 12px;
   overflow: hidden;
-  min-height: 0;
 }
 
 .top-row {
-  flex: 2;
-  min-height: 0;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -96,54 +117,49 @@
 
 .tab-bar {
   display: flex;
-  gap: 0;
-  border-bottom: 2px solid #e2e8f0;
+  gap: 2px;
+  margin-bottom: 0;
+  border-bottom: 1px solid #1f2937;
 }
 
 .tab-btn {
-  padding: 12px 24px;
+  padding: 6px 16px;
   background: transparent;
   border: none;
-  border-bottom: 3px solid transparent;
-  color: #64748b;
-  font-size: 16px;
+  border-bottom: 2px solid transparent;
+  color: #6b7280;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s;
-  margin-bottom: -2px;
-  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', system-ui, sans-serif;
+  margin-bottom: -1px;
 }
 
-.tab-btn:hover { color: #334155; background: #f8fafc; }
+.tab-btn:hover { color: #9ca3af; }
 
 .tab-btn.active {
-  color: #1d4ed8;
-  font-weight: 700;
-  border-bottom-color: #1d4ed8;
+  color: #60a5fa;
+  border-bottom-color: #60a5fa;
 }
 
 .tab-content {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
+  position: relative;
 }
 
 .tab-panel {
   display: block;
-  height: 100%;
 }
 
 .bottom-row {
-  flex: 3;
+  flex: 1;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   overflow: hidden;
   min-height: 0;
 }
 
 .log-wrap {
   flex: 3;
-  min-height: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -151,7 +167,6 @@
 
 .history-wrap {
   flex: 2;
-  min-height: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;

@@ -7,7 +7,8 @@ namespace SecsGemDemo.Equipment.Services;
 public sealed class ProcessSimulator(
     GemStateMachine stateMachine,
     EventEmitter emitter,
-    ISecsGem secsGem)
+    ISecsGem secsGem,
+    RecipeStore recipeStore)
 {
     private string? _currentLotId;
     private string? _currentPpid;
@@ -76,10 +77,11 @@ public sealed class ProcessSimulator(
 
     public async Task RunTraceStreamingAsync(CancellationToken ct)
     {
-        var rng  = new Random();
-        var tick = 0;
+        var rng     = new Random();
+        var tick    = 0;
+        var profile = recipeStore.CurrentProfile;
 
-        Serilog.Log.Information("[SCENARIO] Trace streaming started");
+        Serilog.Log.Information("[SCENARIO] Trace streaming started (PPID={Ppid})", recipeStore.SelectedPpid);
 
         while (!ct.IsCancellationRequested)
         {
@@ -87,9 +89,9 @@ public sealed class ProcessSimulator(
             {
                 await Task.Delay(1000, ct);
 
-                var temp     = 200.0 + 10 * Math.Sin(tick * 0.3) + rng.NextDouble() * 2;
-                var gasFlow  = 50.0  + 5  * Math.Sin(tick * 0.2) + rng.NextDouble();
-                var pressure = 1.0   + 0.1 * Math.Cos(tick * 0.4) + rng.NextDouble() * 0.05;
+                var temp     = profile.BaseTemp     + profile.TempAmplitude     * Math.Sin(tick * profile.TempFreq)     + rng.NextDouble() * 2;
+                var gasFlow  = profile.BaseGas      + profile.GasAmplitude      * Math.Sin(tick * profile.GasFreq)      + rng.NextDouble();
+                var pressure = profile.BasePressure + profile.PressureAmplitude * Math.Cos(tick * profile.PressureFreq) + rng.NextDouble() * 0.01;
 
                 await emitter.EmitAsync(CeidCatalog.Trace, new Dictionary<uint, string>
                 {

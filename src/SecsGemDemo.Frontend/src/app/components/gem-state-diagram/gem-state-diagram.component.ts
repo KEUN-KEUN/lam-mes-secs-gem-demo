@@ -7,12 +7,15 @@ import { SignalrService } from '../../services/signalr.service';
   standalone: true,
   template: `
     <div class="diagram-wrap">
-      <div class="diagram-title">GEM State Machine</div>
+      <div class="diagram-header">
+        <div class="diagram-title">GEM State Machine</div>
+        <div class="diagram-sub">SEMI E30 · COMM transitions on S1F13/F14 · PROCESS transitions on S6F11 events</div>
+      </div>
       <svg class="state-svg" viewBox="0 0 385 186" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <marker id="arr" viewBox="0 0 8 8" refX="8" refY="4"
                   markerWidth="5" markerHeight="5" orient="auto">
-            <polygon points="0,0 8,4 0,8" fill="#4b5563"/>
+            <polygon points="0,0 8,4 0,8" fill="#94a3b8"/>
           </marker>
         </defs>
 
@@ -20,91 +23,104 @@ import { SignalrService } from '../../services/signalr.service';
         <text x="8" y="13" class="lbl">COMM STATE</text>
 
         <!-- NotCommunicating -->
-        <rect [attr.fill]="commFill('NotCommunicating')"
-              x="8" y="18" width="160" height="36" rx="6"/>
+        <rect [attr.fill]="commFill('NotCommunicating')" [attr.stroke]="commStroke('NotCommunicating')"
+              stroke-width="1.5" x="8" y="18" width="160" height="36" rx="6"/>
         <text x="88" y="41" [attr.fill]="stateText(commState === 'NotCommunicating')"
               class="state-lbl" text-anchor="middle">NotCommunicating</text>
 
         <!-- Arrows NotComm ↔ Comm -->
-        <line x1="170" y1="32" x2="225" y2="32" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
-        <line x1="225" y1="44" x2="170" y2="44" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="170" y1="32" x2="225" y2="32" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="225" y1="44" x2="170" y2="44" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arr)"/>
 
         <!-- Communicating -->
-        <rect [attr.fill]="commFill('Communicating')"
-              x="225" y="18" width="152" height="36" rx="6"/>
+        <rect [attr.fill]="commFill('Communicating')" [attr.stroke]="commStroke('Communicating')"
+              stroke-width="1.5" x="225" y="18" width="152" height="36" rx="6"/>
         <text x="301" y="41" [attr.fill]="stateText(commState === 'Communicating')"
               class="state-lbl" text-anchor="middle">Communicating</text>
 
         <!-- Divider -->
-        <line x1="8" y1="70" x2="377" y2="70" stroke="#1f2937" stroke-width="1"/>
+        <line x1="8" y1="70" x2="377" y2="70" stroke="#e2e8f0" stroke-width="1"/>
 
         <!-- PROCESS STATE -->
         <text x="8" y="82" class="lbl">PROCESS STATE</text>
 
-        <!-- 5 boxes: width=62, gap=10, total=5*62+4*10=350, start=(385-350)/2≈17 -->
-
         <!-- Idle -->
-        <rect [attr.fill]="procFill('Idle')" x="17" y="90" width="62" height="32" rx="5"/>
+        <rect [attr.fill]="procFill('Idle')" [attr.stroke]="procStroke('Idle')"
+              stroke-width="1.5" x="17" y="90" width="62" height="32" rx="5"/>
         <text x="48" y="111" [attr.fill]="stateText(processState === 'Idle')"
               class="state-lbl" text-anchor="middle">Idle</text>
 
-        <line x1="79" y1="106" x2="89" y2="106" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="79" y1="106" x2="89" y2="106" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arr)"/>
 
         <!-- Setup -->
-        <rect [attr.fill]="procFill('Setup')" x="89" y="90" width="62" height="32" rx="5"/>
+        <rect [attr.fill]="procFill('Setup')" [attr.stroke]="procStroke('Setup')"
+              stroke-width="1.5" x="89" y="90" width="62" height="32" rx="5"/>
         <text x="120" y="111" [attr.fill]="stateText(processState === 'Setup')"
               class="state-lbl" text-anchor="middle">Setup</text>
 
-        <line x1="151" y1="106" x2="161" y2="106" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="151" y1="106" x2="161" y2="106" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arr)"/>
 
         <!-- Ready -->
-        <rect [attr.fill]="procFill('Ready')" x="161" y="90" width="62" height="32" rx="5"/>
+        <rect [attr.fill]="procFill('Ready')" [attr.stroke]="procStroke('Ready')"
+              stroke-width="1.5" x="161" y="90" width="62" height="32" rx="5"/>
         <text x="192" y="111" [attr.fill]="stateText(processState === 'Ready')"
               class="state-lbl" text-anchor="middle">Ready</text>
 
-        <line x1="223" y1="106" x2="233" y2="106" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="223" y1="106" x2="233" y2="106" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arr)"/>
 
         <!-- Executing -->
-        <rect [attr.fill]="procFill('Executing')" x="233" y="90" width="66" height="32" rx="5"/>
+        <rect [attr.fill]="procFill('Executing')" [attr.stroke]="procStroke('Executing')"
+              stroke-width="1.5" x="233" y="90" width="66" height="32" rx="5"/>
         <text x="266" y="111" [attr.fill]="stateText(processState === 'Executing')"
               class="state-lbl" text-anchor="middle">Executing</text>
 
         <!-- Exec ↔ Pause arrows -->
-        <line x1="299" y1="100" x2="309" y2="100" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
-        <line x1="309" y1="112" x2="299" y2="112" stroke="#374151" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="299" y1="100" x2="309" y2="100" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="309" y1="112" x2="299" y2="112" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#arr)"/>
 
         <!-- Pause -->
-        <rect [attr.fill]="procFill('Pause')" x="309" y="90" width="62" height="32" rx="5"/>
+        <rect [attr.fill]="procFill('Pause')" [attr.stroke]="procStroke('Pause')"
+              stroke-width="1.5" x="309" y="90" width="62" height="32" rx="5"/>
         <text x="340" y="111" [attr.fill]="stateText(processState === 'Pause')"
               class="state-lbl" text-anchor="middle">Pause</text>
 
         <!-- Return path: Executing → Idle -->
         <path d="M 266,122 L 266,158 L 48,158 L 48,122"
-              fill="none" stroke="#374151" stroke-width="1.5"
+              fill="none" stroke="#cbd5e1" stroke-width="1.5"
               stroke-dasharray="4,3" marker-end="url(#arr)"/>
         <text x="157" y="172" class="lbl" text-anchor="middle">CompleteProcess</text>
       </svg>
     </div>
   `,
   styles: [`
+    :host { display: flex; flex-direction: column; height: 100%; }
     .diagram-wrap {
-      background: #111827;
-      border: 1px solid #1f2937;
-      border-radius: 8px;
-      padding: 12px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 20px;
       box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
     }
+    .diagram-header { align-self: flex-start; margin-bottom: 20px; }
     .diagram-title {
-      font-size: 11px;
-      font-weight: 600;
-      color: #6b7280;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 6px;
     }
-    .state-svg { width: 100%; height: auto; }
-    .lbl       { font-size: 9px; fill: #6b7280; font-family: 'Inter', sans-serif; }
-    .state-lbl { font-size: 9.5px; font-family: 'Inter', sans-serif; font-weight: 600; }
+    .diagram-sub {
+      font-size: 15px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+    .state-svg { width: 100%; max-width: 680px; height: auto; }
+    .lbl       { font-size: 14px; fill: #94a3b8; font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', system-ui, sans-serif; font-weight: 600; }
+    .state-lbl { font-size: 15px; font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', system-ui, sans-serif; font-weight: 700; }
   `]
 })
 export class GemStateDiagramComponent implements OnInit, OnDestroy {
@@ -125,23 +141,40 @@ export class GemStateDiagramComponent implements OnInit, OnDestroy {
   ngOnDestroy() { this.sub?.unsubscribe(); }
 
   commFill(state: string): string {
-    if (this.commState !== state) return '#1f2937';
-    return state === 'Communicating' ? '#15803d' : '#991b1b';
+    if (this.commState !== state) return '#f8fafc';
+    return state === 'Communicating' ? '#dcfce7' : '#fee2e2';
+  }
+
+  commStroke(state: string): string {
+    if (this.commState !== state) return '#e2e8f0';
+    return state === 'Communicating' ? '#22c55e' : '#ef4444';
   }
 
   procFill(state: string): string {
-    if (this.processState !== state) return '#1f2937';
+    if (this.processState !== state) return '#f8fafc';
     const map: Record<string, string> = {
-      Idle:      '#334155',
-      Setup:     '#854d0e',
-      Ready:     '#5b21b6',
-      Executing: '#1e3a8a',
-      Pause:     '#9a3412',
+      Idle:      '#f1f5f9',
+      Setup:     '#fef3c7',
+      Ready:     '#ede9fe',
+      Executing: '#dbeafe',
+      Pause:     '#ffedd5',
     };
-    return map[state] ?? '#374151';
+    return map[state] ?? '#f8fafc';
+  }
+
+  procStroke(state: string): string {
+    if (this.processState !== state) return '#e2e8f0';
+    const map: Record<string, string> = {
+      Idle:      '#94a3b8',
+      Setup:     '#f59e0b',
+      Ready:     '#8b5cf6',
+      Executing: '#3b82f6',
+      Pause:     '#f97316',
+    };
+    return map[state] ?? '#e2e8f0';
   }
 
   stateText(active: boolean): string {
-    return active ? '#f9fafb' : '#6b7280';
+    return active ? '#0f172a' : '#94a3b8';
   }
 }
