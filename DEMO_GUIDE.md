@@ -38,7 +38,7 @@
 | Trace (×15) | — | S6F11 CEID=4 → S6F12 | 실시간 차트 (200°C) |
 | Process End | — | S6F11 CEID=3 → S6F12 | PROCESS: Idle, History PASS |
 
-**예상 소요시간:** 약 20초
+**예상 소요시간:** 약 15초
 
 ---
 
@@ -53,7 +53,7 @@ Normal Process Run과 동일한 흐름에서 ProcessStart 이후 5초 뒤 알람
 | Alarm Clear | S5F1 ALCD=0x00 ALID=1001 → S5F2 | PROCESS: **Executing** 복귀 |
 | Process End | S6F11 CEID=3 → S6F12 | PROCESS: Idle, History PASS |
 
-**예상 소요시간:** 약 25초
+**예상 소요시간:** 약 23초
 
 ---
 

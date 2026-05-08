@@ -236,17 +236,17 @@ Three scenarios are defined in `src/SecsGemDemo.Host.Api/scenarios.json`:
 
 | ID | Name | Lot | Recipe | Wafers | Alarm | Duration |
 |----|------|-----|--------|--------|-------|---------|
-| `normal` | Normal Process Run | LOT-2026-001 | RCP-PHOTO-A1 | 25 | No | ~20s |
-| `alarm-scenario` | Alarm Recovery | LOT-2026-002 | RCP-PHOTO-A1 | 25 | Yes | ~25s |
-| `alt-recipe` | Alternative Recipe | LOT-2026-003 | RCP-PHOTO-B2 | 13 | No | ~15s |
+| `normal` | Normal Process Run | LOT-2026-001 | RCP-PHOTO-A1 | 25 | No | ~15s |
+| `alarm-scenario` | Alarm Recovery | LOT-2026-002 | RCP-PHOTO-A1 | 25 | Yes | ~23s |
+| `alt-recipe` | Alternative Recipe | LOT-2026-003 | RCP-PHOTO-B2 | 13 | No | ~10s |
 
 ### Alarm Scenario Flow
 
 The `alarm-scenario` injects a high-temperature alarm mid-process:
 1. Process starts normally
-2. After 5 seconds → `S5F1 ALCD=0x81` (Alarm Set) → ProcessState transitions to **Pause**
+2. After 5 seconds → `S5F1 ALCD=0x80` (Alarm Set) → ProcessState transitions to **Pause**
 3. 3-second hold (simulating operator response)
-4. `S5F1 ALCD=0x01` (Alarm Clear) → ProcessState resumes to **Executing**
+4. `S5F1 ALCD=0x00` (Alarm Clear) → ProcessState resumes to **Executing**
 5. Process completes normally
 
 ---

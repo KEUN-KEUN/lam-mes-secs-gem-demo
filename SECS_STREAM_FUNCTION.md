@@ -157,7 +157,7 @@ HOST → 설비:  S5F2    [ACKC5=0x00]
 
 **이 프로젝트 알람:**
 ```
-ALID=1001  ALTX="Chamber temperature exceeded limit"
+ALID=1  ALTX="Chamber temperature exceeds limit"
 ```
 
 **GEM 상태 전이:**
