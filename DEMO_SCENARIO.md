@@ -1,6 +1,6 @@
 # SECS/GEM Track-In/Out Demo — 시연 시나리오
 
-> 대상: 면접관 앞 라이브 데모 (5~7분)  
+> 대상: 라이브 데모 (5~7분)  
 > 준비: Equipment 프로세스, Host API, Angular 앱 모두 실행 상태
 
 ---
@@ -167,7 +167,7 @@ npm start
 
 ---
 
-## 면접 예상 질문 & 답변 포인트
+## 기술 Q&A
 
 | 질문 | 핵심 답변 |
 |---|---|
@@ -179,7 +179,7 @@ npm start
 | SignalR 선택 이유? | 설비 이벤트는 서버 Push 필요. Polling보다 WebSocket이 적합 |
 | 여러 시나리오 관리? | scenarios.json으로 외부 정의. DB로 이관 가능한 구조. Auto Scenario는 전체 공정을 한 번에 실행 |
 | GEM 상태 머신을 Stateless로? | SEMI E30 상태 전이를 Fire()로 표현. 상태 오류는 예외로 자동 검출. 직접 구현 대비 코드 50% 감소 |
-| 3일 만에 만든 소감? | SEMI 표준 문서 + Secs4Net 라이브러리로 프로토콜 레이어를 빠르게 구축. 실무 MES 경험으로 비즈니스 로직(Track-In/Out, Genealogy, Alarm)은 바로 구현 가능했음 |
+| 개발 접근 방식? | SEMI 표준 문서 + Secs4Net 라이브러리로 프로토콜 레이어를 구축. 실무 MES 경험으로 비즈니스 로직(Track-In/Out, Genealogy, Alarm)을 바로 구현했음 |
 
 ---
 

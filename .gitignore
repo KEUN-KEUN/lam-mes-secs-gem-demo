@@ -28,7 +28,9 @@ appsettings.Production.json
 .DS_Store
 Thumbs.db
 
-# 개인 작업 지시서 / 면접 준비 문서
+# 개인 작업 지시서 / 로컬 전용 문서
 work_description
 program_goal.md
 IMPROVEMENT_LIST.md
+phase2_qna.md
+INTERVIEW_PREP.md

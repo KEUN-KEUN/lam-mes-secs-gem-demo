@@ -1,16 +1,15 @@
-# 학습 진행 현황
+# 구현 현황
 
-> 마지막 업데이트: 2026-05-01  
-> 목적: 면접 시연 및 질문 대응 준비
+> 마지막 업데이트: 2026-05-03  
+> 목적: 레이어별 구현 완료 항목 추적
 
 ---
 
 ## 전체 진행률
 
 ```
-프로그램 이해도  ████████░░░░░░░  40%
-면접 준비도      ██████░░░░░░░░░  30%
-코드 분석        ████░░░░░░░░░░░  20%
+구현 완료도      ████████████░░░  80%
+코드 분석        ████████████░░░  80%
 ```
 
 ---
@@ -22,13 +21,13 @@
 | SEMI E5 (SECS-II) 기초 | ✅ 완료 | Stream/Function 구조, Item 타입, W-bit |
 | PPID vs Recipe 관계 | ✅ 완료 | 같은 것, 표현 레벨 차이 |
 | CEID / DVID / SVID / RPTID 의미 | ✅ 완료 | 공식 SEMI 표준 용어 |
-| S2F33/35/37 동적 Report 흐름 | ✅ 완료 | 이 데모의 핵심, 면접 답변 준비됨 |
+| S2F33/35/37 동적 Report 흐름 | ✅ 완료 | 이 데모의 핵심, TECHNICAL_QA.md 참조 |
 | Stateless 라이브러리 | ✅ 완료 | GEM 상태 머신 구현 도구, 범용 .NET 라이브러리 |
 | SignalR 선택 이유 | ✅ 완료 | 서버 push 필요 → Polling 대신 WebSocket |
 | HSMS Active/Passive 개념 | ✅ 완료 | Host=Active(연결 시도), Equipment=Passive(대기) |
 | SEMI E30 (GEM) 상태 머신 | ⚠️ 개념만 | Comm State / Process State 전이 다이어그램 이해. 코드 미분석 |
 | SEMI E37 (HSMS) | ⚠️ 개념만 | TCP 전송 계층임은 앎. 내부 동작 미파악 |
-| Critical Manufacturing 플랫폼 | ❌ 미시작 | 면접 핵심 요건. 별도 조사 필요 |
+| Critical Manufacturing 플랫폼 | ❌ 미구현 | 향후 확장 가능한 영역 |
 
 ---
 
@@ -87,33 +86,30 @@
 
 ---
 
-## 3. 시나리오 7단계 이해 현황
+## 3. 시나리오 7단계 구현 현황
 
-| 단계 | 버튼 | 핵심 메시지 | 코드 분석 | 면접 설명 가능 |
-|---|---|---|---|---|
-| **Step 1** | Connect | S1F13 → S1F14 | ✅ 완료 | ✅ 가능 |
-| **Step 2** | Define Reports | S2F33×3, S2F35×3, S2F37 | ❌ 미완 | ⚠️ 개념만 |
-| **Step 3** | Carrier Arrived | S6F11 CEID=1 | ❌ 미완 | ❌ |
-| **Step 4** | Select Recipe | S2F41 → S2F42 | ❌ 미완 | ❌ |
-| **Step 5** | Process Start | S6F11 CEID=2 (Track-In) | ❌ 미완 | ❌ |
-| **Step 6** | Process End | S6F11 CEID=3 (Track-Out) | ❌ 미완 | ❌ |
-| **Step 7** | Disconnect | HSMS Separate | ❌ 미완 | ❌ |
+| 단계 | 버튼 | 핵심 메시지 | 구현 상태 |
+|---|---|---|---|
+| **Step 1** | Connect | S1F13 → S1F14 | ✅ 완료 |
+| **Step 2** | Define Reports | S2F33×3, S2F35×3, S2F37 | ✅ 완료 |
+| **Step 3** | Carrier Arrived | S6F11 CEID=1 | ✅ 완료 |
+| **Step 4** | Select Recipe | S2F41 → S2F42 | ✅ 완료 |
+| **Step 5** | Process Start | S6F11 CEID=2 (Track-In) | ✅ 완료 |
+| **Step 6** | Process End | S6F11 CEID=3 (Track-Out) | ✅ 완료 |
+| **Step 7** | Disconnect | HSMS Separate | ✅ 완료 |
 
 ---
 
-## 4. 면접 준비 현황
+## 4. 기술 문서 현황
 
-| 예상 질문 | 답변 준비 | 파일 |
+| 주제 | 상태 | 파일 |
 |---|---|---|
-| S2F33/35/37이 뭔가요? | ✅ 완료 | INTERVIEW_PREP.md Q1 |
-| GEM 상태 머신을 왜 Stateless로? | ✅ 완료 | INTERVIEW_PREP.md Q2 |
-| SignalR 선택 이유? | ✅ 완료 | INTERVIEW_PREP.md Q3 |
-| HSMS가 뭔가요? | ✅ 완료 | INTERVIEW_PREP.md Q4 |
-| DVID vs SVID 차이? | ✅ 완료 | INTERVIEW_PREP.md Q5 |
-| 이 프로젝트 한계는? | ✅ 완료 | INTERVIEW_PREP.md Q6 |
-| Critical Manufacturing 경험? | ❌ 준비 안 됨 | — |
-| 9년 MES 경험에서 뭘 했나요? | ❌ 준비 안 됨 | — |
-| Track-In/Out을 코드로 설명해봐요 | ❌ 준비 안 됨 | — |
+| S2F33/35/37 동적 Report | ✅ 완료 | TECHNICAL_QA.md Q1 |
+| GEM 상태 머신 (Stateless) | ✅ 완료 | TECHNICAL_QA.md Q2 |
+| SignalR 설계 결정 | ✅ 완료 | TECHNICAL_QA.md Q3 |
+| HSMS 프로토콜 | ✅ 완료 | TECHNICAL_QA.md Q4 |
+| DVID vs SVID | ✅ 완료 | TECHNICAL_QA.md Q5 |
+| 알려진 한계점 | ✅ 완료 | TECHNICAL_QA.md Q6 |
 
 ---
 
@@ -138,17 +134,16 @@
 
 ---
 
-## 6. 다음 할 일 (우선순위 순)
+## 6. 추가 개선 사항 (우선순위 순)
 
-### 지금 당장 (면접 준비)
-1. **DEMO_SCENARIO.md 보고 시연 리허설** ← 최우선
-2. "9년 MES 경험" 스토리 정리 (INTERVIEW_PREP.md에 추가)
-3. Critical Manufacturing 플랫폼 조사 (30분 웹 서치)
+### 기능 개선
+1. Phase 4 Host API 레이어 추가 분석
+2. Phase 5 SignalR 브릿지 분석
+3. Phase 6 Angular 컴포넌트 분석 (신규 컴포넌트 포함)
 
-### 남은 코드 이해
-4. Phase 4 Host API 레이어 분석
-5. Phase 5 SignalR 브릿지 분석
-6. Phase 6 Angular 컴포넌트 분석 (신규 컴포넌트 포함)
+### 아키텍처 확장
+4. 다중 장비(1:N) 지원 구조 설계
+5. CEID/DVID DB 기반 관리로 이관
 
 ---
 
@@ -156,7 +151,7 @@
 
 | 파일 | 용도 |
 |---|---|
-| `PROGRAM_OVERVIEW.md` | 전체 프로그램 구조 레퍼런스 |
-| `INTERVIEW_PREP.md` | 면접 Q&A 모음 |
-| `IMPROVEMENT_LIST.md` | 버그/개선 목록 (로컬 only) |
-| `LEARNING_PROGRESS.md` | 이 파일 — 학습 추적 |
+| `structure.md` | 전체 프로그램 구조 레퍼런스 |
+| `TECHNICAL_QA.md` | 기술 Q&A 및 설계 결정 배경 |
+| `SECS_STREAM_FUNCTION.md` | 구현된 S/F 메시지 목록 |
+| `IMPLEMENTATION_LOG.md` | 이 파일 — 구현 현황 추적 |
